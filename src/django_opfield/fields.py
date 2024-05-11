@@ -33,8 +33,7 @@ class OPField(models.CharField):
     def with_secret(cls, *args: Any, **kwargs: Any) -> tuple[OPField, property]:
         op_uri = cls(*args, **kwargs)
 
-        @property
-        def secret(self: models.Model) -> str | None:
+        def secret_getter(self: models.Model) -> str | None:
             if not app_settings.OP_SERVICE_ACCOUNT_TOKEN:
                 msg = "OP_SERVICE_ACCOUNT_TOKEN is not set"
                 raise ValueError(msg)
@@ -50,10 +49,10 @@ class OPField(models.CharField):
             secret = result.stdout.decode("utf-8").strip()
             return secret
 
-        @secret.setter
-        def secret(self: models.Model, value: str) -> None:
+        def secret_setter(self: models.Model, value: str) -> None:
             raise NotImplementedError("OPField does not support setting secret values")
 
+        secret = property(secret_getter, secret_setter)
         return op_uri, secret
 
     @override
