@@ -78,9 +78,9 @@ def tests(session, django):
     shutil.which("op")
 
     if session.posargs:
-        session.run("python", "-m", "pytest", *session.posargs)
+        session.run("python", "-m", "pytest", *session.posargs, external=True)
     else:
-        session.run("python", "-m", "pytest")
+        session.run("python", "-m", "pytest", external=True)
 
 
 @nox.session
