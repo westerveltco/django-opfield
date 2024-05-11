@@ -53,6 +53,9 @@ jobs:
 
       - uses: 1password/install-cli-action@v1
 
+      - run: |
+          which op
+
       - name: Run tests
         run: |
           python -m nox --session "tests(python='${{ matrix.python-version }}', django='${{ matrix.django-version }}')"
