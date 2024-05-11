@@ -58,6 +58,14 @@ jobs:
           op --version
           echo ${OP_CLI_PATH}
 
+      - shell: python -u {0}
+        run: |
+          import shutil
+          import subprocess
+
+          subprocess.check_call(["op", "--version"])
+          shutil.which("op")
+
       - name: Run tests
         run: |
           python -m nox --session "tests(python='${{ matrix.python-version }}', django='${{ matrix.django-version }}')"
