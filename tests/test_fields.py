@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 from unittest.mock import patch
 
 import pytest
@@ -119,9 +120,13 @@ def test_get_secret_error(mock_run):
     assert "Could not read secret from 1Password" in str(exc_info.value)
 
 
-@patch("shutil.which", return_value=None)
+@patch("subprocess.check_call")
 @patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"}, clear=True)
-def test_get_secret_command_not_available(mock_which, db):
+def test_get_secret_command_not_available(mock_check_call, db):
+    mock_check_call.side_effect = subprocess.CalledProcessError(
+        returncode=1, cmd="op --version", output=b"Command not found"
+    )
+
     model = TestModel(op_uri="op://vault/item/field")
 
     with pytest.raises(OSError) as excinfo:
