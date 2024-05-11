@@ -56,6 +56,7 @@ jobs:
       - run: |
           which op
           op --version
+          echo ${OP_CLI_PATH}
 
       - name: Run tests
         run: |
