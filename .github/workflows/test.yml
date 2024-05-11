@@ -1,0 +1,102 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: test-${{ github.head_ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: "1"
+  FORCE_COLOR: "1"
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: westerveltco/setup-ci-action@v0
+        with:
+          python-version: 3.8
+          extra-python-dependencies: nox
+          use-uv: true
+
+      - id: set-matrix
+        run: |
+          echo "matrix=$(python -m nox -l --json | jq -c '[.[] | select(.name == "tests") | {"python-version": .python, "django-version": .call_spec.django}] | {include: .}')" >> $GITHUB_OUTPUT
+
+  test:
+    name: Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }}
+    runs-on: ubuntu-latest
+    needs: generate-matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: westerveltco/setup-ci-action@v0
+        with:
+          python-version: ${{ matrix.python-version }}
+          extra-python-dependencies: nox
+          use-uv: true
+
+      - name: Run tests
+        run: |
+          python -m nox --session "tests(python='${{ matrix.python-version }}', django='${{ matrix.django-version }}')"
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+      - name: OK
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: exit 0
+      - name: Fail
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
+
+  types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: westerveltco/setup-ci-action@v0
+        with:
+          python-version: 3.8
+          extra-python-dependencies: nox
+          use-uv: true
+
+      - name: Run mypy
+        run: |
+          python -m nox --session "mypy"
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: westerveltco/setup-ci-action@v0
+        with:
+          python-version: 3.8
+          extra-python-dependencies: nox
+          use-uv: true
+
+      - name: Run coverage
+        run: |
+          python -m nox --session "coverage"
