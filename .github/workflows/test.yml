@@ -55,6 +55,7 @@ jobs:
 
       - run: |
           which op
+          op --version
 
       - name: Run tests
         run: |
