@@ -6,4 +6,4 @@ from django_opfield.fields import OPField
 
 
 class TestModel(models.Model):
-    op_uri, op_secret = OPField.with_secret()
+    op_uri = OPField()

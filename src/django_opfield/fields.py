@@ -22,38 +22,46 @@ class OPField(models.CharField):
     description = "1Password secret"
 
     def __init__(
-        self, vaults: list[str] | None = None, *args: Any, **kwargs: Any
+        self,
+        vaults: list[str] | None = None,
+        secret_name: str | None = None,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         self.vaults = vaults
+        self.secret_name = secret_name
         kwargs.setdefault("max_length", 255)
         super().__init__(*args, **kwargs)
         self.validators.append(OPURIValidator(vaults=self.vaults))
 
-    @classmethod
-    def with_secret(cls, *args: Any, **kwargs: Any) -> tuple[OPField, property]:
-        op_uri = cls(*args, **kwargs)
+    @override
+    def contribute_to_class(
+        self, cls: type[models.Model], name: str, private_only: bool = False
+    ):
+        super().contribute_to_class(cls, name, private_only)
 
-        def secret_getter(self: models.Model) -> str | None:
+        def get_secret(self: models.Model) -> str | None:
             if not app_settings.OP_SERVICE_ACCOUNT_TOKEN:
-                msg = "OP_SERVICE_ACCOUNT_TOKEN is not set"
-                raise ValueError(msg)
+                raise ValueError("OP_SERVICE_ACCOUNT_TOKEN is not set")
             if shutil.which("op") is None:
                 msg = "The 'op' CLI command is not available"
                 raise OSError(msg)
-            field_value = getattr(self, op_uri.name)
-            result = subprocess.run(["op", "read", field_value], capture_output=True)
+            op_uri = getattr(self, name)
+            result = subprocess.run(["op", "read", op_uri], capture_output=True)
             if result.returncode != 0:
-                err = result.stderr.decode("utf-8")
-                msg = f"Could not read secret from 1Password: {err}"
-                raise ValueError(msg)
-            secret = result.stdout.decode("utf-8").strip()
-            return secret
+                raise ValueError(
+                    f"Could not read secret from 1Password: {result.stderr.decode('utf-8')}"
+                )
+            return result.stdout.decode("utf-8").strip()
 
-        def secret_setter(self: models.Model, value: str) -> None:
-            raise NotImplementedError("OPField does not support setting secret values")
+        def set_secret(self: models.Model, value: str) -> None:
+            raise NotImplementedError("OPField does not support setting secret value")
 
-        secret = property(secret_getter, secret_setter)
-        return op_uri, secret
+        property_name = (
+            f"{name}_secret" if self.secret_name is None else self.secret_name
+        )
+
+        setattr(cls, property_name, property(get_secret, set_secret))
 
     @override
     def deconstruct(self):

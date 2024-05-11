@@ -49,13 +49,6 @@ def test_init_validator():
     assert OPURIValidator in validators
 
 
-def test_field_return():
-    field, secret = OPField.with_secret()
-
-    assert isinstance(field, OPField)
-    assert isinstance(secret, property)
-
-
 def test_deconstruct_default():
     field = OPField()
 
@@ -91,7 +84,7 @@ def test_get_secret(mock_run):
 
     model = TestModel(op_uri="op://vault/item/field")
 
-    secret = model.op_secret
+    secret = model.op_uri_secret
 
     mock_run.assert_called_once_with(
         ["op", "read", "op://vault/item/field"], capture_output=True
@@ -107,7 +100,7 @@ def test_get_secret_no_token(mock_run):
     model = TestModel(op_uri="op://vault/item/field")
 
     with pytest.raises(ValueError) as exc_info:
-        _ = model.op_secret
+        _ = model.op_uri_secret
 
     assert "OP_SERVICE_ACCOUNT_TOKEN is not set" in str(exc_info.value)
 
@@ -121,7 +114,7 @@ def test_get_secret_error(mock_run):
     model = TestModel(op_uri="op://vault/item/field")
 
     with pytest.raises(ValueError) as exc_info:
-        _ = model.op_secret
+        _ = model.op_uri_secret
 
     assert "Could not read secret from 1Password" in str(exc_info.value)
 
@@ -132,7 +125,7 @@ def test_get_secret_command_not_available(mock_which, db):
     model = TestModel(op_uri="op://vault/item/field")
 
     with pytest.raises(OSError) as excinfo:
-        _ = model.op_secret
+        _ = model.op_uri_secret
 
     assert "The 'op' CLI command is not available" in str(excinfo.value)
 
@@ -143,10 +136,10 @@ def test_set_secret_failure(mock_run):
     model = TestModel(op_uri="op://vault/item/field")
 
     with pytest.raises(NotImplementedError) as exc_info:
-        model.op_secret = "new secret"
+        model.op_uri_secret = "new secret"
         model.save()
 
-    assert "OPField does not support setting secret values" in str(exc_info.value)
+    assert "OPField does not support setting secret value" in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
