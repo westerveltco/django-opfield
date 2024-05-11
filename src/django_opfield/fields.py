@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shutil
 import subprocess
 import sys
 from typing import Any
@@ -43,9 +42,11 @@ class OPField(models.CharField):
         def get_secret(self: models.Model) -> str | None:
             if not app_settings.OP_SERVICE_ACCOUNT_TOKEN:
                 raise ValueError("OP_SERVICE_ACCOUNT_TOKEN is not set")
-            if shutil.which("op") is None:
+            try:
+                _ = subprocess.check_call(["op", "--version"])
+            except subprocess.CalledProcessError as err:
                 msg = "The 'op' CLI command is not available"
-                raise OSError(msg)
+                raise OSError(msg) from err
             op_uri = getattr(self, name)
             result = subprocess.run(["op", "read", op_uri], capture_output=True)
             if result.returncode != 0:
