@@ -51,6 +51,8 @@ jobs:
           extra-python-dependencies: nox
           use-uv: true
 
+      - uses: 1password/install-cli-action@v1
+
       - name: Run tests
         run: |
           python -m nox --session "tests(python='${{ matrix.python-version }}', django='${{ matrix.django-version }}')"
@@ -80,6 +82,8 @@ jobs:
           extra-python-dependencies: nox
           use-uv: true
 
+      - uses: 1password/install-cli-action@v1
+
       - name: Run mypy
         run: |
           python -m nox --session "mypy"
@@ -96,6 +100,8 @@ jobs:
           python-version: 3.8
           extra-python-dependencies: nox
           use-uv: true
+
+      - uses: 1password/install-cli-action@v1
 
       - name: Run coverage
         run: |
