@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -9,27 +10,37 @@ from typing import Any
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import (
+        override,  # pyright: ignore[reportUnreachable]  # pragma: no cover
+    )
+
 OPFIELD_SETTINGS_NAME = "DJANGO_OPFIELD"
+
+
+def _get_user_setting(setting: str, fallback: Any = None) -> Any:
+    user_settings = getattr(settings, OPFIELD_SETTINGS_NAME, {})
+
+    if user_setting := user_settings.get(setting, fallback):
+        ret = user_setting
+    else:
+        ret = os.environ.get(setting, None)
+
+    return ret
 
 
 @dataclass(frozen=True)
 class AppSettings:
-    def __getattr__(self, __name: str) -> Any:
-        return self._get_user_settings(__name, super().__getattribute__(__name))
-
-    def _get_user_settings(self, setting: str, fallback: Any = None) -> Any:
-        user_settings = getattr(settings, OPFIELD_SETTINGS_NAME, {})
-
-        if user_setting := user_settings.get(setting, fallback):
-            ret = user_setting
-        else:
-            ret = os.environ.get(setting, None)
-
-        return ret
+    @override
+    def __getattribute__(self, __name: str) -> Any:
+        user_setting = _get_user_setting(__name)
+        return user_setting or super().__getattribute__(__name)
 
     @property
     def OP_CLI_PATH(self) -> Path:
-        if user_cli_path := self._get_user_settings("OP_CLI_PATH"):
+        if user_cli_path := _get_user_setting("OP_CLI_PATH"):
             path = user_cli_path
         else:
             path = shutil.which("op")
@@ -41,7 +52,7 @@ class AppSettings:
 
     @property
     def OP_SERVICE_ACCOUNT_TOKEN(self) -> str:
-        token = self._get_user_settings("OP_SERVICE_ACCOUNT_TOKEN")
+        token = _get_user_setting("OP_SERVICE_ACCOUNT_TOKEN")
 
         if not token:
             raise ImproperlyConfigured("OP_SERVICE_ACCOUNT_TOKEN is not set")
