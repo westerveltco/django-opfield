@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-import subprocess
+from unittest.mock import ANY
 from unittest.mock import patch
 
 import pytest
@@ -88,7 +88,7 @@ def test_get_secret(mock_run):
     secret = model.op_uri_secret
 
     mock_run.assert_called_once_with(
-        ["op", "read", "op://vault/item/field"], capture_output=True
+        [ANY, "read", "op://vault/item/field"], capture_output=True
     )
     assert secret == "secret value"
 
@@ -120,19 +120,17 @@ def test_get_secret_error(mock_run):
     assert "Could not read secret from 1Password" in str(exc_info.value)
 
 
-@patch("subprocess.check_call")
+@patch("shutil.which")
 @patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"}, clear=True)
-def test_get_secret_command_not_available(mock_check_call, db):
-    mock_check_call.side_effect = subprocess.CalledProcessError(
-        returncode=1, cmd="op --version", output=b"Command not found"
-    )
+def test_get_secret_command_not_available(mock_which, db):
+    mock_which.return_value = None
 
     model = TestModel(op_uri="op://vault/item/field")
 
-    with pytest.raises(OSError) as excinfo:
+    with pytest.raises(ImportError) as excinfo:
         _ = model.op_uri_secret
 
-    assert "The 'op' CLI command is not available" in str(excinfo.value)
+    assert "Could not find the 'op' CLI command" in str(excinfo.value)
 
 
 @patch("subprocess.run")

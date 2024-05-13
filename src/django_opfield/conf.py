@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import os
+import shutil
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from django.conf import settings
@@ -19,10 +21,25 @@ OPFIELD_SETTINGS_NAME = "DJANGO_OPFIELD"
 
 @dataclass(frozen=True)
 class AppSettings:
+    OP_CLI_PATH: str | None = None
+
     @override
     def __getattribute__(self, __name: str) -> Any:
         user_settings = getattr(settings, OPFIELD_SETTINGS_NAME, {})
         return user_settings.get(__name, super().__getattribute__(__name))
+
+    def get_op_cli_path(self) -> Path:
+        if self.OP_CLI_PATH is not None:
+            path = self.OP_CLI_PATH
+        elif env_cli_path := os.environ.get("OP_CLI_PATH", None):
+            path = env_cli_path
+        else:
+            path = shutil.which("op")
+
+        if not path:
+            raise ImportError("Could not find the 'op' CLI command")
+
+        return Path(path)
 
     @property
     def OP_SERVICE_ACCOUNT_TOKEN(self) -> str:
