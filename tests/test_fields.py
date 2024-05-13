@@ -85,6 +85,8 @@ def test_get_secret(mock_run):
 
     model = TestModel(op_uri="op://vault/item/field")
 
+    print("env OP_CLI_PATH", os.environ.get("OP_CLI_PATH"))
+
     secret = model.op_uri_secret
 
     mock_run.assert_called_once_with(
@@ -113,6 +115,8 @@ def test_get_secret_error(mock_run):
     mock_run.return_value.stderr = b"error message"
 
     model = TestModel(op_uri="op://vault/item/field")
+
+    print("env OP_CLI_PATH", os.environ.get("OP_CLI_PATH"))
 
     with pytest.raises(ValueError) as exc_info:
         _ = model.op_uri_secret
