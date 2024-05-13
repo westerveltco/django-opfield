@@ -7,20 +7,21 @@ import pytest
 from django.test import override_settings
 
 from django_opfield.conf import OPFIELD_SETTINGS_NAME
+from django_opfield.conf import _get_user_setting
 from django_opfield.conf import app_settings
 
 
 class TestGetUserSettings:
     def test_not_set(self):
-        assert app_settings._get_user_settings("TEST_SETTING") is None
+        assert _get_user_setting("TEST_SETTING") is None
 
     @override_settings(**{OPFIELD_SETTINGS_NAME: {"TEST_SETTING": "test value"}})
     def test_set_in_settings(self):
-        assert app_settings._get_user_settings("TEST_SETTING") == "test value"
+        assert _get_user_setting("TEST_SETTING") == "test value"
 
     @patch.dict(os.environ, {"TEST_SETTING": "test value"})
     def test_set_in_env(self):
-        assert app_settings._get_user_settings("TEST_SETTING") == "test value"
+        assert _get_user_setting("TEST_SETTING") == "test value"
 
 
 @patch.dict(os.environ, {"OP_CLI_PATH": ""})
