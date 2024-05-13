@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 OPFIELD_SETTINGS_NAME = "DJANGO_OPFIELD"
 
@@ -38,7 +39,15 @@ class AppSettings:
 
     @property
     def OP_SERVICE_ACCOUNT_TOKEN(self) -> str:
-        return os.environ.get("OP_SERVICE_ACCOUNT_TOKEN", "")
+        if user_token := self._get_user_settings("OP_SERVICE_ACCOUNT_TOKEN"):
+            token = user_token
+        else:
+            token = os.environ.get("OP_SERVICE_ACCOUNT_TOKEN", None)
+
+        if not token:
+            raise ImproperlyConfigured("OP_SERVICE_ACCOUNT_TOKEN is not set")
+
+        return token
 
 
 app_settings = AppSettings()

@@ -5,6 +5,7 @@ from unittest.mock import ANY
 from unittest.mock import patch
 
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -88,7 +89,7 @@ def test_get_secret(mock_run):
     secret = model.op_uri_secret
 
     mock_run.assert_called_once_with(
-        [ANY, "read", "op://vault/item/field"], capture_output=True
+        [ANY, "read", "op://vault/item/field"], capture_output=True, env=ANY
     )
     assert secret == "secret value"
 
@@ -100,7 +101,7 @@ def test_get_secret_no_token(mock_run):
 
     model = TestModel(op_uri="op://vault/item/field")
 
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ImproperlyConfigured) as exc_info:
         _ = model.op_uri_secret
 
     assert "OP_SERVICE_ACCOUNT_TOKEN is not set" in str(exc_info.value)
