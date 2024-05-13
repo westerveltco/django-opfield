@@ -121,7 +121,7 @@ def test_get_secret_error(mock_run):
 
 
 @patch("shutil.which")
-@patch.dict(os.environ, {"OP_CLI_PATH": "", "OP_SERVICE_ACCOUNT_TOKEN": "token"})
+@patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"})
 def test_get_secret_command_not_available(mock_which, db):
     mock_which.return_value = None
 
