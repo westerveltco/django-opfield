@@ -42,12 +42,12 @@ class OPField(models.CharField):
         def get_secret(self: models.Model) -> str | None:
             op = app_settings.get_op_cli_path()
             op_uri = getattr(self, name)
-            op_token = app_settings.get_op_service_account_token()
+            # call to check that the token is configured correctly
+            _ = app_settings.get_op_service_account_token()
             op_timeout = app_settings.OP_COMMAND_TIMEOUT
             result = subprocess.run(
                 [op, "read", op_uri],
                 capture_output=True,
-                env={"OP_SERVICE_ACCOUNT_TOKEN": op_token},
                 timeout=op_timeout,
             )
             if result.returncode != 0:
