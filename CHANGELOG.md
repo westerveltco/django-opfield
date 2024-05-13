@@ -16,6 +16,12 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 [${version}]: https://github.com/westerveltco/django-opfield/releases/tag/v${version}
 -->
 
+## [Unreleased]
+
+### Fixed
+
+-   Removed the passing in of just the `OP_SERVICE_ACCOUNT_TOKEN` variable to the `subprocess.run` call to `op`. This was clobbering the environment and causing configuration issues with the `op` CLI. First reported in [#12](https://github.com/westerveltco/django-opfield/issues/12) by [@joshuadavidthomas](https://github.com/joshuadavidthomas).
+
 ## [0.1.0]
 
 Initial release! 🎉

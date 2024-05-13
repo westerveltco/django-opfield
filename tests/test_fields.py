@@ -94,7 +94,6 @@ def test_get_secret(mock_run):
     mock_run.assert_called_once_with(
         [ANY, "read", "op://vault/item/field"],
         capture_output=True,
-        env=ANY,
         timeout=ANY,
     )
     assert secret == "secret value"
@@ -198,4 +197,4 @@ def test_command_timeout(mock_run):
     with pytest.raises(TimeoutExpired):
         _ = model.op_uri_secret
 
-    mock_run.assert_called_once_with(ANY, capture_output=True, env=ANY, timeout=1)
+    mock_run.assert_called_once_with(ANY, capture_output=True, timeout=1)
