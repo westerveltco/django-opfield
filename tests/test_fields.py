@@ -133,7 +133,7 @@ def test_get_secret_command_not_available(mock_which, db):
 
     model = OPFieldModel(op_uri="op://vault/item/field")
 
-    with pytest.raises(ImportError) as excinfo:
+    with pytest.raises(RuntimeError) as excinfo:
         _ = model.op_uri_secret
 
     assert "Could not find the 'op' CLI command" in str(excinfo.value)
