@@ -43,6 +43,8 @@ class AppSettings:
         return user_setting or super().__getattribute__(__name)
 
     def get_op_cli_path(self) -> Path:
+        path: str | None = None
+
         if user_cli_path := self.OP_CLI_PATH:
             path = user_cli_path
         else:
