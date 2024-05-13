@@ -17,18 +17,20 @@ class AppSettings:
     def __getattr__(self, __name: str) -> Any:
         return self._get_user_settings(__name, super().__getattribute__(__name))
 
-    def _get_user_settings(
-        self, setting: str | None = None, fallback: Any = None
-    ) -> Any:
+    def _get_user_settings(self, setting: str, fallback: Any = None) -> Any:
         user_settings = getattr(settings, OPFIELD_SETTINGS_NAME, {})
-        return user_settings.get(setting, fallback)
+
+        if user_setting := user_settings.get(setting, fallback):
+            ret = user_setting
+        else:
+            ret = os.environ.get(setting, None)
+
+        return ret
 
     @property
     def OP_CLI_PATH(self) -> Path:
         if user_cli_path := self._get_user_settings("OP_CLI_PATH"):
             path = user_cli_path
-        elif env_cli_path := os.environ.get("OP_CLI_PATH", None):
-            path = env_cli_path
         else:
             path = shutil.which("op")
 
@@ -39,10 +41,7 @@ class AppSettings:
 
     @property
     def OP_SERVICE_ACCOUNT_TOKEN(self) -> str:
-        if user_token := self._get_user_settings("OP_SERVICE_ACCOUNT_TOKEN"):
-            token = user_token
-        else:
-            token = os.environ.get("OP_SERVICE_ACCOUNT_TOKEN", None)
+        token = self._get_user_settings("OP_SERVICE_ACCOUNT_TOKEN")
 
         if not token:
             raise ImproperlyConfigured("OP_SERVICE_ACCOUNT_TOKEN is not set")
