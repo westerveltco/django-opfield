@@ -71,7 +71,7 @@ Assume you have a secret API key stored in a 1Password vault named "my_vault" un
 
 ### Storing references, not secrets
 
-Only the URI reference to the secret is ever stored in the Django admin interface and the database. The actual secret itself is never stored and is only retrieved dynamically when accessed. This approach enables secure management and access to secrets throughout your Django application, safeguarding against potential security vulnerabilities associated with direct exposure.
+Only the URI reference to the secret is ever stored and exposed in the Django admin interface and the database. The actual secret itself is never stored and is only retrieved dynamically when accessed. This approach enables secure management and access to secrets throughout your Django application, safeguarding against potential security vulnerabilities associated with direct exposure.
 
 ## Documentation
 
