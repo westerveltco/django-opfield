@@ -69,6 +69,8 @@ Assume you have a secret API key stored in a 1Password vault named "my_vault" un
 'your_super_secret_api_token_here'
 ```
 
+This ensures that only the URI reference to the secret is ever stored in the Django admin interface and the database. The actual secret itself is never stored and is only retrieved dynamically when accessed. This approach enables secure management and access to secrets throughout your Django application, safeguarding against potential security vulnerabilities associated with direct exposure.
+
 ## Documentation
 
 Please refer to the [documentation](https://django-opfield.westervelt.dev/) for more information.
