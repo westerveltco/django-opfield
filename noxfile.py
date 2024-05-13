@@ -71,16 +71,10 @@ def tests(session, django):
     else:
         session.install(f"django=={django}")
 
-    import shutil
-    import subprocess
-
-    subprocess.check_call(["op", "--version"])
-    shutil.which("op")
-
     if session.posargs:
-        session.run("python", "-m", "pytest", *session.posargs, external=True)
+        session.run("python", "-m", "pytest", *session.posargs)
     else:
-        session.run("python", "-m", "pytest", external=True)
+        session.run("python", "-m", "pytest")
 
 
 @nox.session

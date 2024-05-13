@@ -43,12 +43,11 @@ class OPField(models.CharField):
             if not app_settings.OP_SERVICE_ACCOUNT_TOKEN:
                 raise ValueError("OP_SERVICE_ACCOUNT_TOKEN is not set")
             try:
-                _ = subprocess.check_call(["op", "--version"])
-            except subprocess.CalledProcessError as err:
-                msg = "The 'op' CLI command is not available"
-                raise OSError(msg) from err
+                op = app_settings.OP_CLI_PATH
+            except ImportError as err:
+                raise err
             op_uri = getattr(self, name)
-            result = subprocess.run(["op", "read", op_uri], capture_output=True)
+            result = subprocess.run([op, "read", op_uri], capture_output=True)
             if result.returncode != 0:
                 raise ValueError(
                     f"Could not read secret from 1Password: {result.stderr.decode('utf-8')}"
