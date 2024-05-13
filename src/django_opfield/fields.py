@@ -43,10 +43,9 @@ class OPField(models.CharField):
             if not app_settings.OP_SERVICE_ACCOUNT_TOKEN:
                 raise ValueError("OP_SERVICE_ACCOUNT_TOKEN is not set")
             try:
-                op_path = app_settings.get_op_cli_path()
+                op = app_settings.OP_CLI_PATH
             except ImportError as err:
                 raise err
-            op = op_path.resolve()
             op_uri = getattr(self, name)
             result = subprocess.run([op, "read", op_uri], capture_output=True)
             if result.returncode != 0:
