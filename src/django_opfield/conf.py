@@ -34,15 +34,18 @@ def _get_user_setting(setting: str, fallback: Any = None) -> Any:
 @dataclass(frozen=True)
 class AppSettings:
     OP_COMMAND_TIMEOUT: int = 5  # in seconds
+    OP_CLI_PATH: str = ""
+    OP_SERVICE_ACCOUNT_TOKEN: str = ""
 
     @override
     def __getattribute__(self, __name: str) -> Any:
         user_setting = _get_user_setting(__name)
         return user_setting or super().__getattribute__(__name)
 
-    @property
-    def OP_CLI_PATH(self) -> Path:
-        if user_cli_path := _get_user_setting("OP_CLI_PATH"):
+    def get_op_cli_path(self) -> Path:
+        path: str | None = None
+
+        if user_cli_path := self.OP_CLI_PATH:
             path = user_cli_path
         else:
             path = shutil.which("op")
@@ -52,9 +55,8 @@ class AppSettings:
 
         return Path(path).resolve()
 
-    @property
-    def OP_SERVICE_ACCOUNT_TOKEN(self) -> str:
-        token = _get_user_setting("OP_SERVICE_ACCOUNT_TOKEN")
+    def get_op_service_account_token(self) -> str:
+        token = self.OP_SERVICE_ACCOUNT_TOKEN
 
         if not token:
             raise ImproperlyConfigured("OP_SERVICE_ACCOUNT_TOKEN is not set")

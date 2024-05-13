@@ -15,7 +15,7 @@ from django_opfield.conf import OPFIELD_SETTINGS_NAME
 from django_opfield.fields import OPField
 from django_opfield.validators import OPURIValidator
 
-from .models import TestModel
+from .models import OPFieldModel
 
 
 def test_init_with_defaults():
@@ -87,7 +87,7 @@ def test_get_secret(mock_run):
     mock_run.return_value.returncode = 0
     mock_run.return_value.stdout = b"secret value"
 
-    model = TestModel(op_uri="op://vault/item/field")
+    model = OPFieldModel(op_uri="op://vault/item/field")
 
     secret = model.op_uri_secret
 
@@ -105,7 +105,7 @@ def test_get_secret_no_token(mock_run):
     mock_run.return_value.returncode = 1
     mock_run.return_value.stderr = b"error message"
 
-    model = TestModel(op_uri="op://vault/item/field")
+    model = OPFieldModel(op_uri="op://vault/item/field")
 
     with pytest.raises(ImproperlyConfigured) as exc_info:
         _ = model.op_uri_secret
@@ -119,7 +119,7 @@ def test_get_secret_error(mock_run):
     mock_run.return_value.returncode = 1
     mock_run.return_value.stderr = b"error message"
 
-    model = TestModel(op_uri="op://vault/item/field")
+    model = OPFieldModel(op_uri="op://vault/item/field")
 
     with pytest.raises(ValueError) as exc_info:
         _ = model.op_uri_secret
@@ -132,7 +132,7 @@ def test_get_secret_error(mock_run):
 def test_get_secret_command_not_available(mock_which, db):
     mock_which.return_value = None
 
-    model = TestModel(op_uri="op://vault/item/field")
+    model = OPFieldModel(op_uri="op://vault/item/field")
 
     with pytest.raises(ImportError) as excinfo:
         _ = model.op_uri_secret
@@ -143,7 +143,7 @@ def test_get_secret_command_not_available(mock_which, db):
 @patch("subprocess.run")
 @patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"})
 def test_set_secret_failure(mock_run):
-    model = TestModel(op_uri="op://vault/item/field")
+    model = OPFieldModel(op_uri="op://vault/item/field")
 
     with pytest.raises(NotImplementedError) as exc_info:
         model.op_uri_secret = "new secret"
@@ -160,7 +160,7 @@ def test_set_secret_failure(mock_run):
     ],
 )
 def test_model_with_valid_op_uri(valid_uri, db):
-    model = TestModel(op_uri=valid_uri)
+    model = OPFieldModel(op_uri=valid_uri)
     model.full_clean()
     model.save()
 
@@ -178,7 +178,7 @@ def test_model_with_valid_op_uri(valid_uri, db):
     ],
 )
 def test_model_with_invalid_op_uri(invalid_uri, db):
-    model = TestModel(op_uri=invalid_uri)
+    model = OPFieldModel(op_uri=invalid_uri)
 
     with pytest.raises(ValidationError) as excinfo:
         model.full_clean()
@@ -193,7 +193,7 @@ def test_model_with_invalid_op_uri(invalid_uri, db):
 def test_command_timeout(mock_run):
     mock_run.side_effect = TimeoutExpired(ANY, timeout=1)
 
-    model = TestModel(op_uri="op://vault/item/field")
+    model = OPFieldModel(op_uri="op://vault/item/field")
 
     with pytest.raises(TimeoutExpired):
         _ = model.op_uri_secret
