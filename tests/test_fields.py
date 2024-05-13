@@ -85,8 +85,6 @@ def test_get_secret(mock_run):
 
     model = TestModel(op_uri="op://vault/item/field")
 
-    print("env OP_CLI_PATH", os.environ.get("OP_CLI_PATH"))
-
     secret = model.op_uri_secret
 
     mock_run.assert_called_once_with(
@@ -116,8 +114,6 @@ def test_get_secret_error(mock_run):
 
     model = TestModel(op_uri="op://vault/item/field")
 
-    print("env OP_CLI_PATH", os.environ.get("OP_CLI_PATH"))
-
     with pytest.raises(ValueError) as exc_info:
         _ = model.op_uri_secret
 
@@ -125,13 +121,11 @@ def test_get_secret_error(mock_run):
 
 
 @patch("shutil.which")
-@patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"})
+@patch.dict(os.environ, {"OP_CLI_PATH": "", "OP_SERVICE_ACCOUNT_TOKEN": "token"})
 def test_get_secret_command_not_available(mock_which, db):
     mock_which.return_value = None
 
     model = TestModel(op_uri="op://vault/item/field")
-
-    print("env OP_CLI_PATH", os.environ.get("OP_CLI_PATH"))
 
     with pytest.raises(ImportError) as excinfo:
         _ = model.op_uri_secret
