@@ -131,6 +131,8 @@ def test_get_secret_command_not_available(mock_which, db):
 
     model = TestModel(op_uri="op://vault/item/field")
 
+    print("env OP_CLI_PATH", os.environ.get("OP_CLI_PATH"))
+
     with pytest.raises(ImportError) as excinfo:
         _ = model.op_uri_secret
 
