@@ -2,34 +2,29 @@ from __future__ import annotations
 
 import os
 import shutil
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from django.conf import settings
 
-if sys.version_info >= (3, 12):
-    from typing import override
-else:
-    from typing_extensions import (
-        override,  # pyright: ignore[reportUnreachable]  # pragma: no cover
-    )
-
 OPFIELD_SETTINGS_NAME = "DJANGO_OPFIELD"
 
 
 @dataclass(frozen=True)
 class AppSettings:
-    @override
-    def __getattribute__(self, __name: str) -> Any:
+    def __getattr__(self, __name: str) -> Any:
+        return self._get_user_settings(__name, super().__getattribute__(__name))
+
+    def _get_user_settings(
+        self, setting: str | None = None, fallback: Any = None
+    ) -> Any:
         user_settings = getattr(settings, OPFIELD_SETTINGS_NAME, {})
-        return user_settings.get(__name, super().__getattribute__(__name))
+        return user_settings.get(setting, fallback)
 
     @property
     def OP_CLI_PATH(self) -> Path:
-        user_settings = getattr(settings, OPFIELD_SETTINGS_NAME, {})
-        if user_cli_path := user_settings.get("OP_CLI_PATH", None):
+        if user_cli_path := self._get_user_settings("OP_CLI_PATH"):
             path = user_cli_path
         elif env_cli_path := os.environ.get("OP_CLI_PATH", None):
             path = env_cli_path
