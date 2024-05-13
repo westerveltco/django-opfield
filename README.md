@@ -55,18 +55,15 @@ Assume you have a secret API key stored in a 1Password vault named "my_vault" un
 
 ```pycon
 >>> from example.models import APIService
->>>
 >>> my_api = APIService.objects.create(
 ...     name="My API", api_key="op://my_vault/my_api/api_key"
 ... )
->>>
 >>> print(my_api)
 <APIService: My API>
 >>> print(my_api.name)
 'My API'
 >>> print(my_api.api_key)
 'op://my_vault/my_api/api_key'
->>>
 >>> # Retrieving the actual secret value is done using the automatically generated '_secret' attribute
 >>> print(my_api.api_key_secret)
 'your_super_secret_api_token_here'
