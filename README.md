@@ -19,13 +19,25 @@ A custom Django field that integrates with the 1Password `op` CLI to securely ac
 
 1. Install the package from PyPI:
 
-```bash
-python -m pip install django-opfield
-```
+   ```bash
+   python -m pip install django-opfield
+   ```
 
-2. Install the [1Password `op` CLI tool](https://developer.1password.com/docs/cli/get-started).
+2. Install the [1Password `op` CLI tool](https://developer.1password.com/docs/cli/get-started), making sure it is callable from where your application is running.
 
 3. Create a [1Password service account](https://developer.1password.com/docs/service-accounts/get-started).
+
+   To make the service account's token available to `django-opfield`, either set the `OP_SERVICE_ACCOUNT_TOKEN` environment variable or set it in your application's `settings.py`:
+
+   ```python
+   # settings.py
+   DJANGO_OPFIELD = {
+       # Explicitly set here only as an example
+       # Use whatever configuration/environment library you prefer
+       # (`python-dotenv`, `django-environs`, `environs`, etc.)
+       "OP_SERVICE_ACCOUNT_TOKEN": "super-secret-token",
+   }
+   ```
 
 ## Usage
 
