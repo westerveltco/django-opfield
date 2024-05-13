@@ -36,7 +36,7 @@ class TestGetOpCLIPath:
     def test_default(self, mock_which):
         mock_which.return_value = None
 
-        with pytest.raises(ImportError) as exc_info:
+        with pytest.raises(RuntimeError) as exc_info:
             assert app_settings.get_op_cli_path()
 
         assert "Could not find the 'op' CLI command" in str(exc_info.value)

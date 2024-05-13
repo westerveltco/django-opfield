@@ -51,7 +51,7 @@ class AppSettings:
             path = shutil.which("op")
 
         if not path:
-            raise ImportError("Could not find the 'op' CLI command")
+            raise RuntimeError("Could not find the 'op' CLI command")
 
         return Path(path).resolve()
 
