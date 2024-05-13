@@ -78,7 +78,7 @@ def test_deconstruct_with_vaults():
 
 
 @patch("subprocess.run")
-@patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"}, clear=True)
+@patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"})
 def test_get_secret(mock_run):
     mock_run.return_value.returncode = 0
     mock_run.return_value.stdout = b"secret value"
@@ -138,7 +138,7 @@ def test_get_secret_command_not_available(mock_which, db):
 
 
 @patch("subprocess.run")
-@patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"}, clear=True)
+@patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"})
 def test_set_secret_failure(mock_run):
     model = TestModel(op_uri="op://vault/item/field")
 
