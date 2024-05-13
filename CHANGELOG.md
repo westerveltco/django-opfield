@@ -18,6 +18,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.1.1]
+
 ### Changed
 
 -   Changed exception raised if `op` CLI not found to `RuntimeError`.
@@ -54,5 +56,6 @@ Initial release! 🎉
 
 -   Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/westerveltco/django-opfield/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/westerveltco/django-opfield/compare/v0.1.1...HEAD
 [0.1.0]: https://github.com/westerveltco/django-opfield/releases/tag/v0.1.0
+[0.1.1]: https://github.com/westerveltco/django-opfield/releases/tag/v0.1.1
