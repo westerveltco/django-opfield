@@ -5,5 +5,5 @@ from django.db import models
 from django_opfield.fields import OPField
 
 
-class TestModel(models.Model):
+class OPFieldModel(models.Model):
     op_uri = OPField()

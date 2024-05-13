@@ -17,6 +17,7 @@ def pytest_configure(config):
 
 TEST_SETTINGS = {
     "INSTALLED_APPS": [
+        "django_opfield",
         "tests",
     ]
 }

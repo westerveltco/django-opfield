@@ -40,9 +40,9 @@ class OPField(models.CharField):
         super().contribute_to_class(cls, name, private_only)
 
         def get_secret(self: models.Model) -> str | None:
-            op = app_settings.OP_CLI_PATH
+            op = app_settings.get_op_cli_path()
             op_uri = getattr(self, name)
-            op_token = app_settings.OP_SERVICE_ACCOUNT_TOKEN
+            op_token = app_settings.get_op_service_account_token()
             op_timeout = app_settings.OP_COMMAND_TIMEOUT
             result = subprocess.run(
                 [op, "read", op_uri],
