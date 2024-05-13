@@ -42,4 +42,5 @@ Initial release! 🎉
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/westerveltco/django-opfield/commits/main/
+[unreleased]: https://github.com/westerveltco/django-opfield/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/westerveltco/django-opfield/releases/tag/v0.1.0
