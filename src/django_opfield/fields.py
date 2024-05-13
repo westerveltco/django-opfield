@@ -40,14 +40,14 @@ class OPField(models.CharField):
         super().contribute_to_class(cls, name, private_only)
 
         def get_secret(self: models.Model) -> str | None:
-            if not app_settings.OP_SERVICE_ACCOUNT_TOKEN:
-                raise ValueError("OP_SERVICE_ACCOUNT_TOKEN is not set")
-            try:
-                op = app_settings.OP_CLI_PATH
-            except ImportError as err:
-                raise err
+            op = app_settings.OP_CLI_PATH
             op_uri = getattr(self, name)
-            result = subprocess.run([op, "read", op_uri], capture_output=True)
+            op_token = app_settings.OP_SERVICE_ACCOUNT_TOKEN
+            result = subprocess.run(
+                [op, "read", op_uri],
+                capture_output=True,
+                env={"OP_SERVICE_ACCOUNT_TOKEN": op_token},
+            )
             if result.returncode != 0:
                 raise ValueError(
                     f"Could not read secret from 1Password: {result.stderr.decode('utf-8')}"
