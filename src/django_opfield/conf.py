@@ -33,6 +33,8 @@ def _get_user_setting(setting: str, fallback: Any = None) -> Any:
 
 @dataclass(frozen=True)
 class AppSettings:
+    OP_COMMAND_TIMEOUT: int = 5  # in seconds
+
     @override
     def __getattribute__(self, __name: str) -> Any:
         user_setting = _get_user_setting(__name)

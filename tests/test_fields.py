@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from subprocess import TimeoutExpired
 from unittest.mock import ANY
 from unittest.mock import patch
 
@@ -8,7 +9,9 @@ import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.test import override_settings
 
+from django_opfield.conf import OPFIELD_SETTINGS_NAME
 from django_opfield.fields import OPField
 from django_opfield.validators import OPURIValidator
 
@@ -89,7 +92,10 @@ def test_get_secret(mock_run):
     secret = model.op_uri_secret
 
     mock_run.assert_called_once_with(
-        [ANY, "read", "op://vault/item/field"], capture_output=True, env=ANY
+        [ANY, "read", "op://vault/item/field"],
+        capture_output=True,
+        env=ANY,
+        timeout=ANY,
     )
     assert secret == "secret value"
 
@@ -179,3 +185,17 @@ def test_model_with_invalid_op_uri(invalid_uri, db):
         model.save()
 
     assert "op_uri" in str(excinfo.value)
+
+
+@patch("subprocess.run")
+@patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"})
+@override_settings(**{OPFIELD_SETTINGS_NAME: {"OP_COMMAND_TIMEOUT": 1}})
+def test_command_timeout(mock_run):
+    mock_run.side_effect = TimeoutExpired(ANY, timeout=1)
+
+    model = TestModel(op_uri="op://vault/item/field")
+
+    with pytest.raises(TimeoutExpired):
+        _ = model.op_uri_secret
+
+    mock_run.assert_called_once_with(ANY, capture_output=True, env=ANY, timeout=1)

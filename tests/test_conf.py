@@ -46,3 +46,12 @@ class TestOPCliPath:
         mock_which.return_value = "path/to/op"
 
         assert "path/to/op" in str(app_settings.OP_CLI_PATH)
+
+
+class TestOpCommandTimeout:
+    def test_default(self):
+        assert app_settings.OP_COMMAND_TIMEOUT == 5
+
+    @override_settings(**{OPFIELD_SETTINGS_NAME: {"OP_COMMAND_TIMEOUT": 10}})
+    def test_user_setting(self):
+        assert app_settings.OP_COMMAND_TIMEOUT == 10

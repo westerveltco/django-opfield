@@ -43,10 +43,12 @@ class OPField(models.CharField):
             op = app_settings.OP_CLI_PATH
             op_uri = getattr(self, name)
             op_token = app_settings.OP_SERVICE_ACCOUNT_TOKEN
+            op_timeout = app_settings.OP_COMMAND_TIMEOUT
             result = subprocess.run(
                 [op, "read", op_uri],
                 capture_output=True,
                 env={"OP_SERVICE_ACCOUNT_TOKEN": op_token},
+                timeout=op_timeout,
             )
             if result.returncode != 0:
                 raise ValueError(
