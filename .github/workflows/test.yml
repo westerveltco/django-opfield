@@ -88,6 +88,10 @@ jobs:
 
       - uses: 1password/install-cli-action@v1
 
+      - name: Set OP_CLI_PATH
+        run: |
+          echo "OP_CLI_PATH=$(command -v op)" >> $GITHUB_ENV
+
       - name: Run mypy
         run: |
           python -m nox --session "mypy"
@@ -106,6 +110,10 @@ jobs:
           use-uv: true
 
       - uses: 1password/install-cli-action@v1
+
+      - name: Set OP_CLI_PATH
+        run: |
+          echo "OP_CLI_PATH=$(command -v op)" >> $GITHUB_ENV
 
       - name: Run coverage
         run: |

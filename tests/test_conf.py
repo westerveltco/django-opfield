@@ -23,12 +23,14 @@ class TestOPCliPath:
         assert "path/to/op" in str(app_settings.OP_CLI_PATH)
 
     @patch("shutil.which")
+    @patch.dict(os.environ, {"OP_CLI_PATH": None})
     def test_shutil_which(self, mock_which):
         mock_which.return_value = "path/to/op"
 
         assert "path/to/op" in str(app_settings.OP_CLI_PATH)
 
     @patch("shutil.which")
+    @patch.dict(os.environ, {"OP_CLI_PATH": None})
     def test_get_op_cli_path_none(self, mock_which):
         mock_which.return_value = None
 
