@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import subprocess
 import sys
 from typing import Any
 
 from django.db import models
 
-from django_opfield.conf import app_settings
+from django_opfield.op import OPCli
 from django_opfield.validators import OPURIValidator
 
 if sys.version_info >= (3, 12):
@@ -40,21 +39,9 @@ class OPField(models.CharField):
         super().contribute_to_class(cls, name, private_only)
 
         def get_secret(self: models.Model) -> str | None:
-            op = app_settings.get_op_cli_path()
             op_uri = getattr(self, name)
-            # call to check that the token is configured correctly
-            _ = app_settings.get_op_service_account_token()
-            op_timeout = app_settings.OP_COMMAND_TIMEOUT
-            result = subprocess.run(
-                [op, "read", op_uri],
-                capture_output=True,
-                timeout=op_timeout,
-            )
-            if result.returncode != 0:
-                raise ValueError(
-                    f"Could not read secret from 1Password: {result.stderr.decode('utf-8')}"
-                )
-            return result.stdout.decode("utf-8").strip()
+            op_secret = OPCli().read(op_uri)
+            return op_secret
 
         def set_secret(self: models.Model, value: str) -> None:
             raise NotImplementedError("OPField does not support setting secret value")
