@@ -18,6 +18,8 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ## [Unreleased]
 
+## [0.2.0]
+
 ### Added
 
 - Added support for Django 5.1 and 5.2.
@@ -64,6 +66,7 @@ Initial release! 🎉
 
 - Josh Thomas <josh@joshthomas.dev> (maintainer)
 
-[unreleased]: https://github.com/westerveltco/django-opfield/compare/v0.1.1...HEAD
+[unreleased]: https://github.com/westerveltco/django-opfield/compare/v0.2.0...HEAD
 [0.1.0]: https://github.com/westerveltco/django-opfield/releases/tag/v0.1.0
 [0.1.1]: https://github.com/westerveltco/django-opfield/releases/tag/v0.1.1
+[0.2.0]: https://github.com/westerveltco/django-opfield/releases/tag/v0.2.0
