@@ -51,7 +51,7 @@ jobs:
           extra-python-dependencies: nox
           use-uv: true
 
-      - uses: 1password/install-cli-action@v1
+      - uses: 1password/install-cli-action@v2
 
       - name: Run tests
         run: |
@@ -82,7 +82,7 @@ jobs:
           extra-python-dependencies: nox
           use-uv: true
 
-      - uses: 1password/install-cli-action@v1
+      - uses: 1password/install-cli-action@v2
 
       - name: Run mypy
         run: |
@@ -101,7 +101,7 @@ jobs:
           extra-python-dependencies: nox
           use-uv: true
 
-      - uses: 1password/install-cli-action@v1
+      - uses: 1password/install-cli-action@v2
 
       - name: Run coverage
         run: |
