@@ -85,18 +85,18 @@ def test_deconstruct_with_vaults():
 @patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "token"})
 def test_get_secret(mock_run):
     mock_run.return_value.returncode = 0
-    mock_run.return_value.stdout = b"secret value"
+    mock_run.return_value.stdout = b"value from op"
 
     model = OPFieldModel(op_uri="op://vault/item/field")
 
-    secret = model.op_uri_secret
+    resolved_value = model.op_uri_secret
 
     mock_run.assert_called_once_with(
         [ANY, "read", "op://vault/item/field"],
         capture_output=True,
         timeout=ANY,
     )
-    assert secret == "secret value"
+    assert resolved_value == "value from op"
 
 
 @patch("subprocess.run")
@@ -120,10 +120,8 @@ def test_get_secret_error(mock_run):
 
     model = OPFieldModel(op_uri="op://vault/item/field")
 
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ValueError, match="Could not read secret from 1Password"):
         _ = model.op_uri_secret
-
-    assert "Could not read secret from 1Password" in str(exc_info.value)
 
 
 @patch("shutil.which")
@@ -144,11 +142,11 @@ def test_get_secret_command_not_available(mock_which, db):
 def test_set_secret_failure(mock_run):
     model = OPFieldModel(op_uri="op://vault/item/field")
 
-    with pytest.raises(NotImplementedError) as exc_info:
-        model.op_uri_secret = "new secret"
-        model.save()
-
-    assert "OPField does not support setting secret value" in str(exc_info.value)
+    with pytest.raises(
+        NotImplementedError,
+        match="OPField does not support setting secret value",
+    ):
+        model.op_uri_secret = "new secret"  # noqa: S105
 
 
 @pytest.mark.parametrize(
@@ -179,11 +177,8 @@ def test_model_with_valid_op_uri(valid_uri, db):
 def test_model_with_invalid_op_uri(invalid_uri, db):
     model = OPFieldModel(op_uri=invalid_uri)
 
-    with pytest.raises(ValidationError) as excinfo:
+    with pytest.raises(ValidationError, match="op_uri"):
         model.full_clean()
-        model.save()
-
-    assert "op_uri" in str(excinfo.value)
 
 
 @patch("subprocess.run")
