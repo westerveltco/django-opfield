@@ -45,7 +45,7 @@ class OPField(models.CharField):
             # call to check that the token is configured correctly
             _ = app_settings.get_op_service_account_token()
             op_timeout = app_settings.OP_COMMAND_TIMEOUT
-            result = subprocess.run(
+            result = subprocess.run(  # noqa: S603
                 [op, "read", op_uri],
                 capture_output=True,
                 timeout=op_timeout,
