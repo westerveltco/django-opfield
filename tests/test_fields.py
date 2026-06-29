@@ -120,7 +120,9 @@ def test_get_secret_error(mock_run):
 
     model = OPFieldModel(op_uri="op://vault/item/field")
 
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(
+        ValueError, match="Could not read secret from 1Password"
+    ) as exc_info:
         _ = model.op_uri_secret
 
     assert "Could not read secret from 1Password" in str(exc_info.value)
@@ -146,7 +148,6 @@ def test_set_secret_failure(mock_run):
 
     with pytest.raises(NotImplementedError) as exc_info:
         model.op_uri_secret = "new secret"
-        model.save()
 
     assert "OPField does not support setting secret value" in str(exc_info.value)
 
@@ -181,7 +182,6 @@ def test_model_with_invalid_op_uri(invalid_uri, db):
 
     with pytest.raises(ValidationError) as excinfo:
         model.full_clean()
-        model.save()
 
     assert "op_uri" in str(excinfo.value)
 
