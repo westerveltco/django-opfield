@@ -3,7 +3,7 @@ build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [project]
-authors = [{name = "Josh Thomas", email = "josh@joshthomas.dev"}]
+authors = [{ name = "Josh Thomas", email = "josh@joshthomas.dev" }]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Framework :: Django",
@@ -26,7 +26,7 @@ dependencies = ["django>=4.2"]
 description = "A custom Django field for storing and securely accessing a 1Password vault item."
 dynamic = ["version"]
 keywords = []
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 name = "django-opfield"
 readme = "README.md"
 requires-python = ">=3.9"
