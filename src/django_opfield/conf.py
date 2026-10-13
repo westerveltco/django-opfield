@@ -13,9 +13,7 @@ from django.core.exceptions import ImproperlyConfigured
 if sys.version_info >= (3, 12):
     from typing import override
 else:
-    from typing_extensions import (
-        override,  # pyright: ignore[reportUnreachable]  # pragma: no cover
-    )
+    from typing_extensions import override  # pyright: ignore[reportUnreachable]  # pragma: no cover
 
 OPFIELD_SETTINGS_NAME = "DJANGO_OPFIELD"
 

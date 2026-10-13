@@ -7,16 +7,12 @@ from typing import Any
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.deconstruct import deconstructible
-from django.utils.regex_helper import (
-    _lazy_re_compile,  # pyright: ignore[reportPrivateUsage]
-)
+from django.utils.regex_helper import _lazy_re_compile  # pyright: ignore[reportPrivateUsage]
 
 if sys.version_info >= (3, 12):
     from typing import override
 else:
-    from typing_extensions import (
-        override,  # pyright: ignore[reportUnreachable]  # pragma: no cover
-    )
+    from typing_extensions import override  # pyright: ignore[reportUnreachable]  # pragma: no cover
 
 
 @deconstructible
